@@ -1,0 +1,12 @@
+log_dir: 'output'
+data_dir: 'data/data_train'
+image_height: 224
+image_width: 224
+
+classes: 200
+base_ch: 144
+groups: 1
+
+learning_rate: 0.01
+batch_size: 64
+epoch: 10
