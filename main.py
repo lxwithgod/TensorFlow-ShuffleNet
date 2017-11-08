@@ -48,6 +48,7 @@ def main(_):
         tf.summary.scalar('accuracy_top_{}'.format(conf.show_top_k), accuracy_top_k[1])
 
     optimizer = tf.train.MomentumOptimizer(learning_rate=conf.learning_rate, momentum=conf.momentum)
+    tf.summary.scalar('Summary/learning_rate', optimizer._learning_rate)
     train_op = slim.learning.create_train_op(loss, optimizer)
 
     slim.learning.train(
