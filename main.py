@@ -33,15 +33,14 @@ def main(_):
 
     with tf.variable_scope("MyNet"):
         predictions = get_model(image, classes=conf.classes, base_ch=conf.base_ch, groups=conf.groups)
-        class_predict = tf.argmax(predictions, axis=1)
 
     with tf.variable_scope("Summary"):
         loss = tf.losses.softmax_cross_entropy(onehot_labels=label, logits=predictions)
         tf.summary.scalar('loss', loss)
         accuracy = tf.metrics.mean(tf.nn.in_top_k(predictions, class_label, 1))
         tf.summary.scalar('accuracy', accuracy[1])
-        accuracy_topk = tf.metrics.mean(tf.nn.in_top_k(predictions, class_label, 2))
-        tf.summary.scalar('accuracy_top_k', accuracy_topk[1])
+        accuracy_top_k = tf.metrics.mean(tf.nn.in_top_k(predictions, class_label, conf.show_top_k))
+        tf.summary.scalar('accuracy_top_{}'.format(conf.show_top_k), accuracy_top_k[1])
 
     optimizer = tf.train.AdamOptimizer(learning_rate=conf.learning_rate)
     train_op = slim.learning.create_train_op(loss, optimizer)

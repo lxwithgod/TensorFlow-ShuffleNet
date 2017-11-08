@@ -10,3 +10,4 @@ groups: 1
 learning_rate: 0.01
 batch_size: 32
 epoch: 10
+show_top_k: 5
