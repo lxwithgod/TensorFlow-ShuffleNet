@@ -36,6 +36,11 @@ def get_image_folder_dataset(root, batch_size=4, epoch=1, pre_process_fn=None, i
             images = sorted(images)
         filenames.extend(images)
         clazz.extend([ith] * len(images))
+    if is_training:
+        _path_and_label = [(f, l) for f, l in zip(filenames, clazz)]
+        random.shuffle(_path_and_label)
+        filenames = [d[0] for d in _path_and_label]
+        clazz = [d[1] for d in _path_and_label]
 
     dataset = tf.data.Dataset.from_tensor_slices((filenames, clazz))
     dataset = dataset.map(_parse_function, num_parallel_calls=n_cpus)
