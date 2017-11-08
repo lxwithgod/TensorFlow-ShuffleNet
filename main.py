@@ -47,7 +47,7 @@ def main(_):
         accuracy_top_k = tf.metrics.mean(tf.nn.in_top_k(predictions, class_label, conf.show_top_k))
         tf.summary.scalar('accuracy_top_{}'.format(conf.show_top_k), accuracy_top_k[1])
 
-    optimizer = tf.train.AdamOptimizer(learning_rate=conf.learning_rate)
+    optimizer = tf.train.MomentumOptimizer(learning_rate=conf.learning_rate, momentum=conf.momentum)
     train_op = slim.learning.create_train_op(loss, optimizer)
 
     slim.learning.train(
