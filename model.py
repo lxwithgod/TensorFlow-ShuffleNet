@@ -38,11 +38,15 @@ def get_model(image, classes, base_ch=144, groups=1, training=True):
         return net
 
     def shuffle_bottleneck(net, output, stride, group=1, scope="Unit"):
+        if 1 != stride:
+            _b, _h, _w, _c = net.get_shape().as_list()
+            output = output - _c
+
         assert 0 == output % group, "Output channels must be a multiple of groups"
 
         with tf.variable_scope(scope):
             if 1 != stride:
-                net_skip = slim.conv2d(net, output, [3, 3], stride, scope='3x3AVGPool')
+                net_skip = slim.avg_pool2d(net, [3, 3], stride, padding="SAME", scope='3x3AVGPool')
             else:
                 net_skip = net
 
@@ -58,7 +62,11 @@ def get_model(image, classes, base_ch=144, groups=1, training=True):
 
             net = group_conv(net, output, 1, group, relu=True, scope="1x1ConvOut")
 
-            net = net + net_skip
+            if 1 != stride:
+                net = tf.concat([net, net_skip], axis=3)
+            else:
+                net = net + net_skip
+
         return net
 
     def shuffle_stage(net, output, repeat, group, scope="Stage"):
