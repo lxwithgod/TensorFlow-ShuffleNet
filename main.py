@@ -38,7 +38,7 @@ def main(_):
     with tf.variable_scope("Summary"):
         loss = tf.losses.softmax_cross_entropy(onehot_labels=label, logits=predictions)
         tf.summary.scalar('loss', loss)
-        accuracy = tf.metrics.accuracy(class_predict, class_label)
+        accuracy = tf.metrics.mean(tf.nn.in_top_k(predictions, class_label, 1))
         tf.summary.scalar('accuracy', accuracy[1])
         accuracy_topk = tf.metrics.mean(tf.nn.in_top_k(predictions, class_label, 2))
         tf.summary.scalar('accuracy_top_k', accuracy_topk[1])
