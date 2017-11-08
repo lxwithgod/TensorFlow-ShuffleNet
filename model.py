@@ -8,7 +8,7 @@ import tensorflow as tf
 import tensorflow.contrib.slim as slim
 
 
-def get_model(image, classes, base_ch=144, groups=1, training=True):
+def get_model(image, classes, shuffle=True, base_ch=144, groups=1, training=True):
     def channel_shuffle(net, output, group, scope="ChannelShuffle"):
         assert 0 == output % group, "Output channels must be a multiple of groups"
         num_channels_in_group = output // group
@@ -52,7 +52,8 @@ def get_model(image, classes, base_ch=144, groups=1, training=True):
 
             net = group_conv(net, output, 1, group, relu=True, scope="1x1ConvIn")
 
-            net = channel_shuffle(net, output, group, scope="ChannelShuffle")
+            if shuffle:
+                net = channel_shuffle(net, output, group, scope="ChannelShuffle")
 
             with tf.variable_scope("3x3DWConv"):
                 depthwise_filter = tf.get_variable("depth_conv_w",

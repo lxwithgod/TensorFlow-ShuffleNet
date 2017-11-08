@@ -4,6 +4,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import argparse
 import tensorflow as tf
 import tensorflow.contrib.slim as slim
 from reader import get_image_folder_dataset
@@ -32,7 +33,11 @@ def main(_):
         class_label = tf.argmax(label, axis=1)
 
     with tf.variable_scope("MyNet"):
-        predictions = get_model(image, classes=conf.classes, base_ch=conf.base_ch, groups=conf.groups)
+        predictions = get_model(image,
+                                classes=conf.classes,
+                                shuffle=conf.shuffle,
+                                base_ch=conf.base_ch,
+                                groups=conf.groups)
 
     with tf.variable_scope("Summary"):
         loss = tf.losses.softmax_cross_entropy(onehot_labels=label, logits=predictions)
@@ -54,5 +59,11 @@ def main(_):
 
 
 if '__main__' == __name__:
-    parse_config('config.yml')
+    tf.logging.set_verbosity(tf.logging.INFO)
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--conf', '-c', default='conf/demo.yml', help='Path to the config file')
+    args = parser.parse_args()
+    parse_config(args.conf)
+
     tf.app.run()
