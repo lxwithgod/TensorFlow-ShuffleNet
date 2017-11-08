@@ -8,5 +8,5 @@ base_ch: 144
 groups: 1
 
 learning_rate: 0.01
-batch_size: 64
+batch_size: 32
 epoch: 10

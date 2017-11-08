@@ -10,6 +10,9 @@ import tensorflow.contrib.slim as slim
 
 def get_model(image, classes, base_ch=144, groups=1, training=True):
     def shuffle_bottleneck(net, output, stride, group=1, scope="Unit"):
+        assert 0 == output % group, "Output channels must be a multiple of groups"
+        num_channels_in_group = output // group
+
         with tf.variable_scope(scope):
             with slim.arg_scope([slim.conv2d],
                                 activation_fn=None,
@@ -18,29 +21,35 @@ def get_model(image, classes, base_ch=144, groups=1, training=True):
                                 normalizer_fn=slim.batch_norm,
                                 normalizer_params={'is_training': training}):
                 if 1 != stride:
-                    net_skip = slim.conv2d(net, output, [3, 3], 2)
+                    net_skip = slim.conv2d(net, output, [3, 3], 2, scope='3x3AVGPool')
                 else:
                     net_skip = net
+                net = slim.conv2d(net, output, [1, 1], activation_fn=tf.nn.relu, scope="1x1ConvIn")
 
-                net = slim.conv2d(net, output, [1, 1], activation_fn=tf.nn.relu)
+                with tf.variable_scope("ChannelShuffle"):
+                    net = tf.split(net, output, axis=3, name="split")
+                    chs = []
+                    for i in range(group):
+                        for j in range(num_channels_in_group):
+                            chs.append(tf.squeeze(net[i + j * group], name="squeeze"))
+                    net = tf.stack(chs, axis=3, name="stack")
 
-                depthwise_filter = tf.get_variable("depth_conv_w",
-                                                   [3, 3, output, 1],
-                                                   initializer=tf.truncated_normal_initializer())
-                net = tf.nn.depthwise_conv2d(net, depthwise_filter, [1, stride, stride, 1], 'SAME', name="DWConv")
+                with tf.variable_scope("3x3DWConv"):
+                    depthwise_filter = tf.get_variable("depth_conv_w",
+                                                       [3, 3, output, 1],
+                                                       initializer=tf.truncated_normal_initializer())
+                    net = tf.nn.depthwise_conv2d(net, depthwise_filter, [1, stride, stride, 1], 'SAME', name="DWConv")
 
-                net = slim.conv2d(net, output, [1, 1])
+                net = slim.conv2d(net, output, [1, 1], scope="1x1ConvOut")
 
                 net = net + net_skip
         return net
 
     def shuffle_stage(net, output, repeat, group, scope="Stage"):
         with tf.variable_scope(scope):
-            with tf.variable_scope('Unit{}'.format(0)):
-                net = shuffle_bottleneck(net, output, 2, 1)
+            net = shuffle_bottleneck(net, output, 2, 1, scope='Unit{}'.format(0))
             for i in range(repeat):
-                with tf.variable_scope('Unit{}'.format(i + 1)):
-                    net = shuffle_bottleneck(net, output, 1, group)
+                net = shuffle_bottleneck(net, output, 1, group, scope='Unit{}'.format(i + 1))
         return net
 
     with slim.arg_scope([slim.conv2d]):

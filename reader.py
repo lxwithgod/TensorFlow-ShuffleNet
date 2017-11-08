@@ -10,7 +10,8 @@ from os import listdir
 from os.path import isfile, join, isdir
 
 
-def get_image_folder_dataset(root, batch_size=4, epoch=1, pre_process_fn=None, is_training=True, one_hot=False):
+def get_image_folder_dataset(root, batch_size=4, epoch=1, pre_process_fn=None, is_training=True, one_hot=False,
+                             n_cpus=4):
     """ 直接读取整个文件夹作为数据集 """
 
     def _parse_function(filename, clazz):
@@ -37,13 +38,13 @@ def get_image_folder_dataset(root, batch_size=4, epoch=1, pre_process_fn=None, i
         clazz.extend([ith] * len(images))
 
     dataset = tf.data.Dataset.from_tensor_slices((filenames, clazz))
-    dataset = dataset.map(_parse_function, num_parallel_calls=4)
+    dataset = dataset.map(_parse_function, num_parallel_calls=n_cpus)
     dataset = dataset.batch(batch_size)
     dataset = dataset.repeat(epoch)
-    dataset = dataset.prefetch(batch_size * 4)
+    dataset = dataset.prefetch(batch_size * n_cpus)
 
     if is_training:
-        dataset = dataset.shuffle(batch_size * 4)
+        dataset = dataset.shuffle(batch_size * n_cpus)
 
     iterator = dataset.make_one_shot_iterator()
 
