@@ -1,5 +1,6 @@
 log_dir: 'output'
-data_dir: 'data/data_train'
+data_train_dir: 'data/data_train'
+data_test_dir: 'data/data_test'
 image_height: 224
 image_width: 224
 

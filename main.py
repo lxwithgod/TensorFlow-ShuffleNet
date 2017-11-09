@@ -7,7 +7,7 @@ from __future__ import print_function
 import argparse
 import tensorflow as tf
 import tensorflow.contrib.slim as slim
-from reader import get_image_folder_dataset
+from reader import ImageFolderDataset
 from config import get_config, parse_config
 from model import get_model
 
@@ -24,12 +24,12 @@ def main(_):
         return image
 
     with tf.variable_scope("dataset"):
-        dataset, classes = get_image_folder_dataset(conf.data_dir,
-                                                    batch_size=conf.batch_size,
-                                                    epoch=conf.epoch,
-                                                    pre_process_fn=pre_process_fn,
-                                                    one_hot=True)
-        image, label = dataset.get_next()
+        dataset = ImageFolderDataset(conf.data_train_dir,
+                                     batch_size=conf.batch_size,
+                                     epoch=conf.epoch,
+                                     pre_process_fn=pre_process_fn,
+                                     one_hot=True)
+        image, label = dataset.get_data()
         class_label = tf.argmax(label, axis=1)
 
     with tf.variable_scope("MyNet"):
