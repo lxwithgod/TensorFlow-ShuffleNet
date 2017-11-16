@@ -12,6 +12,15 @@ This repository attempts to reproduce this amazing work by Xiangyu Zhang et al. 
 
 ## Train
 
+1. Copy `conf/demo.yml` to `conf/config.yml`
+1. Modify `conf/config.yml`
+    - Name your network
+    - Change `data_train_dir` to `path/to/tiny-image-net/train`
+    - Change `data_test_dir` to `path/to/tiny-image-net/test`
+    - Change other config items
+1. Train with `python3 train.py --conf conf/config.xml`
+1. Have a cup of coffee
+
 ## Evaluate
 
 ## Todo

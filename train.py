@@ -5,6 +5,7 @@ from __future__ import division
 from __future__ import print_function
 
 import argparse
+import os
 import tensorflow as tf
 import tensorflow.contrib.slim as slim
 from reader import ImageFolderDataset
@@ -15,6 +16,10 @@ from model import get_model
 def main(_):
     conf = get_config()
     global_step = slim.get_or_create_global_step()
+
+    log_dir = os.path.join(conf.log_dir, conf.name)
+    if not os.path.exists(log_dir):
+        os.mkdir(log_dir, 0o755)
 
     def pre_process_fn(image):
         image = tf.image.random_flip_left_right(image)
@@ -60,7 +65,7 @@ def main(_):
 
     slim.learning.train(
         train_op,
-        conf.log_dir,
+        log_dir,
         log_every_n_steps=10,
         save_summaries_secs=10,
         save_interval_secs=600)
