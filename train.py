@@ -32,7 +32,7 @@ def main(_):
         image, label = dataset.get_data()
         class_label = tf.argmax(label, axis=1)
 
-    with tf.variable_scope("MyNet"):
+    with tf.variable_scope("ShuffleNet"):
         predictions = get_model(image,
                                 classes=conf.classes,
                                 shuffle=conf.shuffle,
