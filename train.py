@@ -30,6 +30,8 @@ def main(_):
                                      pre_process_fn=pre_process_fn,
                                      one_hot=True)
         image, label = dataset.get_data()
+
+        tf.summary.image('input_image', image, max_outputs=4)
         class_label = tf.argmax(label, axis=1)
 
     with tf.variable_scope("ShuffleNet"):
