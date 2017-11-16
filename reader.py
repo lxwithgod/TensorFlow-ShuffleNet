@@ -79,7 +79,7 @@ class ImageFolderDataset(Dataset):
         self.len = len(filenames)
 
         if self.shuffle:
-            self._shuffle_data_and_label(filenames, clazz)
+            filenames, clazz = self._shuffle_data_and_label(filenames, clazz)
 
         self._dataset = tf.data.Dataset.from_tensor_slices((filenames, clazz))
         self._dataset = self._dataset.map(self._parse_function, num_parallel_calls=self.n_cpus)
