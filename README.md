@@ -23,10 +23,23 @@ This repository attempts to reproduce this amazing work by Xiangyu Zhang et al. 
 
 ## Evaluate
 
+### Evaluate while training
+
+```bash
+python3 evaluate.py --conf conf/config.xml --watch
+```
+
+### Evaluate
+
+```bash
+python3 evaluate.py --conf conf/config.xml --file path/to/the/ckpt/file.ckpt
+```
+
 ## Todo
 
 - [ ] Debug
     - [ ] The loss is incorrect at present
+    - [ ] Evaluation accuracy is incorrect at present
 - [ ] Code of evaluation
 - [ ] Test all code
 - [ ] Pre-trained model
