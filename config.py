@@ -10,9 +10,12 @@ import yaml
 __CONF = None
 
 
-def parse_config(path):
+def parse_config(path, **args):
     class Flag:
         def __init__(self, **entries):
+            self.__dict__.update(entries)
+
+        def update(self, **entries):
             self.__dict__.update(entries)
 
     global __CONF
@@ -21,6 +24,7 @@ def parse_config(path):
 
     with open(path) as f:
         __CONF = Flag(**yaml.load(f))
+        __CONF.update(**args)
 
 
 def get_config():

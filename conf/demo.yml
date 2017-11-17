@@ -2,6 +2,7 @@ name: 'demo'
 log_dir: 'output'
 data_train_dir: 'data/data_train'
 data_test_dir: 'data/data_test'
+
 image_height: 224
 image_width: 224
 
@@ -16,3 +17,8 @@ weight_decay: 0.0005
 batch_size: 32
 epoch: 10
 show_top_k: 5
+
+save_interval: 300
+eval_interval: 300
+eval_batch: 100
+eval_random: True

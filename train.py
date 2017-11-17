@@ -68,7 +68,7 @@ def main(_):
         log_dir,
         log_every_n_steps=10,
         save_summaries_secs=10,
-        save_interval_secs=600)
+        save_interval_secs=conf.save_interval)
 
 
 if '__main__' == __name__:
