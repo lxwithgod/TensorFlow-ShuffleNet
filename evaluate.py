@@ -63,7 +63,7 @@ def main(_):
         op = tf.Print(op, [metric_value], metric_name)
         summary_ops.append(op)
 
-    if not conf.watch:
+    if conf.watch:
         slim.evaluation.evaluation_loop(
             '',
             log_dir,
