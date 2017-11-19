@@ -18,14 +18,14 @@ class Dataset():
                  pre_process_fn=None,
                  shuffle=True,
                  one_hot=False,
-                 n_cpus=4):
+                 n_threads=4):
         self.batch_size = batch_size
         self.epoch = epoch
         self.class_map = class_map
         self.pre_process_fn = pre_process_fn
         self.shuffle = shuffle
         self.one_hot = one_hot
-        self.n_cpus = n_cpus
+        self.n_threads = n_threads
 
         # Need to be initialized
         self._parse_function = None
@@ -39,13 +39,13 @@ class Dataset():
 
     def apply_settings(self):
         self.n_classes = len(self.class_map)
-        self._dataset = self._dataset.map(self._parse_function, num_parallel_calls=self.n_cpus)
+        self._dataset = self._dataset.map(self._parse_function, num_parallel_calls=self.n_threads)
         self._dataset = self._dataset.batch(self.batch_size)
         self._dataset = self._dataset.repeat(self.epoch)
-        self._dataset = self._dataset.prefetch(self.batch_size * self.n_cpus)
+        self._dataset = self._dataset.prefetch(self.batch_size * self.n_threads)
 
         if self.shuffle:
-            self._dataset = self._dataset.shuffle(self.batch_size * self.n_cpus)
+            self._dataset = self._dataset.shuffle(self.batch_size * self.n_threads)
 
     def prepare(self):
         pass
