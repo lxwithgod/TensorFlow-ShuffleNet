@@ -40,7 +40,6 @@ python3 evaluate.py --conf conf/config.xml --file path/to/the/ckpt/file.ckpt
 - [ ] Debug
     - [ ] The loss is incorrect at present
     - [ ] Evaluation accuracy is incorrect at present
-- [ ] Code of evaluation
 - [ ] Test all code
 - [ ] Pre-trained model
 
