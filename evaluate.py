@@ -51,9 +51,10 @@ def main(_):
                                 groups=conf.groups)
 
     names_to_values, names_to_updates = slim.metrics.aggregate_metric_map({
-        'top_1_accuracy': slim.metrics.streaming_sparse_precision_at_k(predictions, label, 1),
-        'top_{}_accuracy'.format(conf.show_top_k): slim.metrics.streaming_sparse_precision_at_k(predictions, label,
-                                                                                                conf.show_top_k),
+        'top_1_accuracy':
+            slim.metrics.streaming_mean(tf.nn.in_top_k(predictions, label, 1)),
+        'top_{}_accuracy'.format(conf.show_top_k):
+            slim.metrics.streaming_mean(tf.nn.in_top_k(predictions, label, conf.show_top_k)),
     })
 
     summary_ops = []
@@ -62,7 +63,7 @@ def main(_):
         op = tf.Print(op, [metric_value], metric_name)
         summary_ops.append(op)
 
-    if conf.watch:
+    if not conf.watch:
         slim.evaluation.evaluation_loop(
             '',
             log_dir,
