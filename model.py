@@ -80,7 +80,7 @@ def get_model(image, classes, shuffle=True, base_ch=144, groups=1, training=True
     with slim.arg_scope([slim.conv2d]):
         with tf.variable_scope('Stage1'):
             net = slim.conv2d(image, 24, [3, 3], 2)
-            net = slim.max_pool2d(net, [3, 3], 2)
+            net = slim.max_pool2d(net, [3, 3], 2, padding='SAME')
 
         net = shuffle_stage(net, base_ch, 3, groups, 'Stage2')
         net = shuffle_stage(net, base_ch * 2, 7, groups, 'Stage3')
