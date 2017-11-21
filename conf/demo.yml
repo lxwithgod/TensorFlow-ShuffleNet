@@ -1,7 +1,11 @@
 name: 'demo'
 log_dir: 'output'
+
+# For tiny-image-200
 data_train_dir: 'data/data_train'
 data_test_dir: 'data/data_test'
+# For ImageNet
+data_dir: 'data/ILSVRC2017'
 
 image_height: 224
 image_width: 224
@@ -22,3 +26,5 @@ save_interval: 300
 eval_interval: 300
 eval_batch: 100
 eval_random: True
+
+read_thread: 4

@@ -8,7 +8,7 @@ import argparse
 import os
 import tensorflow as tf
 import tensorflow.contrib.slim as slim
-from reader import ImageTXTDataset
+from dataset import ImageTXTDataset
 from config import get_config, parse_config
 from model import get_model
 

@@ -8,7 +8,7 @@ import argparse
 import os
 import tensorflow as tf
 import tensorflow.contrib.slim as slim
-from reader import ImageFolderDataset
+from dataset import ImageFolderDataset
 from config import get_config, parse_config
 from model import get_model
 
@@ -34,6 +34,7 @@ def main(_):
                                      batch_size=conf.batch_size,
                                      epoch=conf.epoch,
                                      pre_process_fn=pre_process_fn,
+                                     n_threads=conf.read_thread,
                                      one_hot=True)
         image, label = dataset.get_data()
 
