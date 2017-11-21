@@ -56,17 +56,19 @@ def get_model(image, classes, shuffle=True, base_ch=144, groups=1, training=True
                 net = channel_shuffle(net, output, group, scope="ChannelShuffle")
 
             with tf.variable_scope("3x3DWConv"):
-                depthwise_filter = tf.get_variable("depth_conv_w",
-                                                   [3, 3, output, 1],
-                                                   initializer=tf.truncated_normal_initializer())
+                depthwise_filter = tf.get_variable("depth_conv_w", [3, 3, output, 1],
+                                                   initializer=tf.truncated_normal_initializer(stddev=0.01))
                 net = tf.nn.depthwise_conv2d(net, depthwise_filter, [1, stride, stride, 1], 'SAME', name="DWConv")
+                # Todo: Add batch norm here
 
-            net = group_conv(net, output, 1, group, relu=True, scope="1x1ConvOut")
+            net = group_conv(net, output, 1, group, scope="1x1ConvOut")
 
             if 1 != stride:
                 net = tf.concat([net, net_skip], axis=3)
             else:
                 net = net + net_skip
+
+            net = tf.nn.relu(net)
 
         return net
 
@@ -77,7 +79,9 @@ def get_model(image, classes, shuffle=True, base_ch=144, groups=1, training=True
                 net = shuffle_bottleneck(net, output, 1, group, scope='Unit{}'.format(i + 1))
         return net
 
-    with slim.arg_scope([slim.conv2d]):
+    with slim.arg_scope([slim.conv2d],
+                        weights_initializer=tf.truncated_normal_initializer(stddev=0.01),
+                        weights_regularizer=slim.l2_regularizer(0.0005)):
         with tf.variable_scope('Stage1'):
             net = slim.conv2d(image, 24, [3, 3], 2)
             net = slim.max_pool2d(net, [3, 3], 2, padding='SAME')

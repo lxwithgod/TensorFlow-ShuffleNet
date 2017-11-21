@@ -53,16 +53,16 @@ def main(_):
     learning_rate = tf.train.exponential_decay(conf.learning_rate, global_step, 1000, 0.95)
     optimizer = tf.train.MomentumOptimizer(learning_rate=learning_rate, momentum=conf.momentum)
 
-    train_op = slim.learning.create_train_op(loss, optimizer)
+    train_op = tf.contrib.layers.optimize_loss(loss, global_step, learning_rate, optimizer)
 
     with tf.variable_scope("Summary"):
-        tf.summary.scalar('Summary/learning_rate', optimizer._learning_rate)
-        tf.summary.scalar('loss', loss)
-
         accuracy = tf.metrics.mean(tf.nn.in_top_k(predictions, class_label, 1))
         tf.summary.scalar('accuracy', accuracy[1])
         accuracy_top_k = tf.metrics.mean(tf.nn.in_top_k(predictions, class_label, conf.show_top_k))
         tf.summary.scalar('accuracy_top_{}'.format(conf.show_top_k), accuracy_top_k[1])
+
+        for l in tf.trainable_variables():
+            tf.summary.histogram(l.name.replace(':', "_"), l)
 
     slim.learning.train(
         train_op,
